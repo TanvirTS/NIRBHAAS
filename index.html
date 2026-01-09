@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nirbhaas Messenger - Silent Communication</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+</head>
+<body class="h-full">
+  <div class="main-container">
+    <div class="phone-frame">
+      <!-- Home Screen -->
+      <div class="screen active" id="homeScreen">
+        <div class="home-header">
+          <h1 class="home-title" id="appName">NIRBHAAS</h1>
+          <p class="home-subtitle" id="tagline">Silent Understanding</p>
+        </div>
+        <div class="contacts-list" id="contactsList"></div>
+      </div>
+
+      <!-- Chat Screen -->
+      <div class="screen" id="chatScreen">
+        <div class="chat-header">
+          <button class="back-button" id="backButton">←</button>
+          <h2 class="chat-title" id="chatName">Priya</h2>
+          <button class="info-button" id="infoButton">ⓘ</button>
+        </div>
+        <div class="messages-container" id="messagesContainer"></div>
+        <div class="chat-input-area">
+          <button class="compose-button" id="composeButton">
+            <span id="composeButtonText">+ Express Emotion</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Emotion Composer Overlay -->
+      <div class="composer-overlay" id="composerOverlay">
+        <div class="composer-panel">
+          <div class="composer-header">
+            <h3 class="composer-title" id="composerTitle">Create Emotion</h3>
+            <button class="close-button" id="closeComposer">×</button>
+          </div>
+          <div class="composer-section">
+            <div class="section-label">🎨 Emotion Color</div>
+            <div class="color-grid" id="colorGrid"></div>
+            <div style="margin-top: 16px; display: flex; gap: 10px; align-items: center;">
+              <input type="color" id="customColorPicker" class="custom-color-input" value="#667eea">
+              <button class="add-custom-color-btn" id="addCustomColorBtn">+ Add Custom Color</button>
+            </div>
+          </div>
+          <div class="composer-section">
+            <div class="section-label">🔺 Pattern Shape</div>
+            <div class="shape-grid">
+              <button class="shape-btn selected" data-shape="circle">Circle</button>
+              <button class="shape-btn" data-shape="wave">Wave</button>
+              <button class="shape-btn" data-shape="shard">Shard</button>
+              <button class="shape-btn" data-shape="spiral">Spiral</button>
+              <button class="shape-btn" data-shape="burst">Burst</button>
+              <button class="shape-btn custom-shape-btn" data-shape="custom">+ Custom</button>
+            </div>
+            <div class="custom-shape-controls" id="customShapeControls" style="display: none; margin-top: 12px;">
+              <label style="font-size: 12px; color: #495057; font-weight: 600; display: block; margin-bottom: 6px;">Custom Shape Pattern</label>
+              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <select id="customShapeType" class="custom-select" style="flex: 1;">
+                  <option value="polygon">Polygon</option>
+                  <option value="star">Star</option>
+                  <option value="flower">Flower</option>
+                  <option value="chaos">Chaos</option>
+                </select>
+                <input type="number" id="customShapeSides" class="custom-input" placeholder="Sides" min="3" max="12" value="5" style="width: 80px;">
+              </div>
+            </div>
+          </div>
+          <div class="composer-section">
+            <div class="section-label">⚡ Motion Speed</div>
+            <div class="slider-group">
+              <input type="range" class="slider" id="motionSlider" min="1" max="10" value="5" step="0.5">
+              <span class="slider-value" id="motionValue">5</span>
+            </div>
+            <div style="margin-top: 12px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #495057;">
+                <input type="checkbox" id="customMotionToggle" style="width: 16px; height: 16px; cursor: pointer;">
+                <span>Enable Custom Motion Path</span>
+              </label>
+              <div id="customMotionControls" style="display: none; margin-top: 8px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                <label style="font-size: 12px; color: #495057; font-weight: 600; display: block; margin-bottom: 6px;">Motion Path Type</label>
+                <select id="customMotionPath" class="custom-select">
+                  <option value="linear">Linear</option>
+                  <option value="bounce">Bounce</option>
+                  <option value="zigzag">ZigZag</option>
+                  <option value="orbit">Orbit</option>
+                  <option value="random">Random Walk</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="composer-section">
+            <div class="section-label">💓 Rhythm Pulse</div>
+            <div class="slider-group">
+              <input type="range" class="slider" id="rhythmSlider" min="0.5" max="3" value="1" step="0.1">
+              <span class="slider-value" id="rhythmValue">1.0</span>
+            </div>
+            <div style="margin-top: 12px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #495057;">
+                <input type="checkbox" id="customRhythmToggle" style="width: 16px; height: 16px; cursor: pointer;">
+                <span>Enable Custom Rhythm Pattern</span>
+              </label>
+              <div id="customRhythmControls" style="display: none; margin-top: 8px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                <label style="font-size: 12px; color: #495057; font-weight: 600; display: block; margin-bottom: 6px;">Rhythm Pattern</label>
+                <select id="customRhythmPattern" class="custom-select" style="margin-bottom: 8px;">
+                  <option value="steady">Steady Beat</option>
+                  <option value="accelerate">Accelerating</option>
+                  <option value="decelerate">Decelerating</option>
+                  <option value="heartbeat">Heartbeat (Lub-Dub)</option>
+                  <option value="morse">Morse Code</option>
+                </select>
+                <div class="slider-group">
+                  <label style="font-size: 11px; color: #6c757d; margin-right: 8px;">Variation:</label>
+                  <input type="range" class="slider" id="rhythmVariation" min="0" max="100" value="0" step="5">
+                  <span class="slider-value" id="rhythmVariationValue">0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="composer-section">
+            <div class="section-label">🏷️ Name Your Emotion (Optional)</div>
+            <input type="text" class="emotion-name-input" id="emotionNameInput" placeholder="e.g., Peaceful Joy, Intense Focus, Gentle Love...">
+            <p style="font-size: 12px; color: #6c757d; margin: 8px 0 0 0; font-style: italic;">💡 AI learns from your custom emotions to improve future suggestions</p>
+          </div>
+          <div class="composer-section">
+            <div class="section-label">Visual Preview</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+              <button class="preview-mode-btn active" data-mode="live">Live</button>
+              <button class="preview-mode-btn" data-mode="density">Particle Density</button>
+              <button class="preview-mode-btn" data-mode="speed">Speed Trail</button>
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+              <label style="font-size: 12px; color: #495057; font-weight: 600; white-space: nowrap;">Particles:</label>
+              <input type="range" class="slider" id="particleDensity" min="10" max="100" value="30" step="5" style="flex: 1;">
+              <span class="slider-value" id="particleDensityValue">30</span>
+            </div>
+            <div class="preview-canvas-container" id="previewCanvas"></div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <button class="preview-control-btn" id="pausePreviewBtn">⏸ Pause</button>
+              <button class="preview-control-btn" id="resetPreviewBtn">↻ Reset</button>
+              <button class="preview-control-btn" id="screenshotPreviewBtn">📸 Capture</button>
+            </div>
+          </div>
+          <div class="composer-section">
+            <button class="haptic-btn" id="previewSoundBtn" style="width: 100%; margin: 0 0 12px 0;"> 🔊 Preview Sound </button>
+            <div>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #495057;">
+                <input type="checkbox" id="customSoundToggle" style="width: 16px; height: 16px; cursor: pointer;">
+                <span>Customize Sound Settings</span>
+              </label>
+              <div id="customSoundControls" style="display: none; margin-top: 8px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                <label style="font-size: 12px; color: #495057; font-weight: 600; display: block; margin-bottom: 6px;">Sound Characteristics</label>
+                <select id="customWaveform" class="custom-select" style="margin-bottom: 8px;">
+                  <option value="auto">Auto (Shape-Based)</option>
+                  <option value="sine">Sine Wave - Smooth</option>
+                  <option value="triangle">Triangle - Natural</option>
+                  <option value="square">Square - Sharp</option>
+                  <option value="sawtooth">Sawtooth - Buzzy</option>
+                </select>
+                <div class="slider-group" style="margin-bottom: 8px;">
+                  <label style="font-size: 11px; color: #6c757d; margin-right: 8px; min-width: 60px;">Pitch:</label>
+                  <input type="range" class="slider" id="customPitch" min="100" max="1000" value="400" step="50">
+                  <span class="slider-value" id="customPitchValue">400Hz</span>
+                </div>
+                <div class="slider-group" style="margin-bottom: 8px;">
+                  <label style="font-size: 11px; color: #6c757d; margin-right: 8px; min-width: 60px;">Duration:</label>
+                  <input type="range" class="slider" id="customDuration" min="0.1" max="3" value="1" step="0.1">
+                  <span class="slider-value" id="customDurationValue">1.0s</span>
+                </div>
+                <div class="slider-group">
+                  <label style="font-size: 11px; color: #6c757d; margin-right: 8px; min-width: 60px;">Volume:</label>
+                  <input type="range" class="slider" id="customVolume" min="0" max="100" value="15" step="5">
+                  <span class="slider-value" id="customVolumeValue">15%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="send-button" id="sendButton">
+            <span id="sendButtonText">Send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Button (outside phone frame) -->
+    <button class="external-info-button" id="externalInfoButton">
+      <span>ⓘ</span>
+      <span class="info-tooltip">Emotion Guide</span>
+    </button>
+
+    <!-- Emotion Guide Sidebar (outside phone frame) -->
+    <div class="guide-sidebar" id="guideSidebar">
+      <div class="guide-header">
+        <h3 class="guide-title">Emotion Guide</h3>
+        <button class="close-button" id="closeGuide">×</button>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">🎨 Color Meanings</h4>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="guide-icon" style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f);">❤️</div>
+            <div class="guide-text">
+              <p class="guide-label">Red - Passion &amp; Love</p>
+              <p class="guide-desc">Intense feelings, excitement, urgency, strong emotions</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: linear-gradient(135deg, #f9ca24, #f0932b);">☀️</div>
+            <div class="guide-text">
+              <p class="guide-label">Yellow - Joy &amp; Energy</p>
+              <p class="guide-desc">Happiness, optimism, warmth, enthusiasm</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: linear-gradient(135deg, #6dd5ed, #2193b0);">🌊</div>
+            <div class="guide-text">
+              <p class="guide-label">Blue - Calm &amp; Trust</p>
+              <p class="guide-desc">Peace, stability, confidence, serenity</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">💫</div>
+            <div class="guide-text">
+              <p class="guide-label">Cyan - Hope &amp; Clarity</p>
+              <p class="guide-desc">Fresh perspective, clear thoughts, new beginnings</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">🔮</div>
+            <div class="guide-text">
+              <p class="guide-label">Purple - Creativity &amp; Mystery</p>
+              <p class="guide-desc">Imagination, spirituality, wisdom, depth</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+            <div class="guide-text">
+              <p class="guide-label">Pink - Affection &amp; Tenderness</p>
+              <p class="guide-desc">Gentle love, caring, compassion, softness</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">🔺 What Shapes Mean</h4>
+        <p class="guide-desc" style="margin-bottom: 12px;">Choose a pattern that feels right for your emotion:</p>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">●</div>
+            <div class="guide-text">
+              <p class="guide-label">Circle</p>
+              <p class="guide-desc">Smooth, flowing, connected feelings</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">∿</div>
+            <div class="guide-text">
+              <p class="guide-label">Wave</p>
+              <p class="guide-desc">Natural, rhythmic, up and down emotions</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">◆</div>
+            <div class="guide-text">
+              <p class="guide-label">Shard</p>
+              <p class="guide-desc">Sharp, direct, intense feelings</p>
+            </div>
+          </div>
+        </div>
+        <p class="guide-desc" style="margin-top: 12px; font-style: italic;">💡 Want something unique? Use the Custom Shape Builder to design your own pattern!</p>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">⚡ Speed &amp; Energy</h4>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">🐌</div>
+            <div class="guide-text">
+              <p class="guide-label">Slow Motion - Calm &amp; Reflection</p>
+              <p class="guide-desc">Thoughtful, peaceful, meditative state</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">⚡</div>
+            <div class="guide-text">
+              <p class="guide-label">Fast Motion - Energy &amp; Excitement</p>
+              <p class="guide-desc">Active, dynamic, high energy feelings</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">💓</div>
+            <div class="guide-text">
+              <p class="guide-label">Rhythm Pulse - Emotional Intensity</p>
+              <p class="guide-desc">Heartbeat-like patterns showing emotional depth</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">🔊 Sound &amp; Audio Guide</h4>
+        <p class="guide-desc" style="margin-bottom: 12px;">Every emotion creates a unique sound signature based on its properties:</p>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">🎵</div>
+            <div class="guide-text">
+              <p class="guide-label">Pitch (Color-Based)</p>
+              <p class="guide-desc">Red = Low tones, Blue = Mid tones, Purple = High tones</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">🎼</div>
+            <div class="guide-text">
+              <p class="guide-label">Waveform (Shape-Based)</p>
+              <p class="guide-desc">Circle = Sine (smooth), Wave = Triangle (natural), Shard = Square (sharp)</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">⏱️</div>
+            <div class="guide-text">
+              <p class="guide-label">Duration (Rhythm-Based)</p>
+              <p class="guide-desc">Slow rhythm = Short tones, Fast rhythm = Extended tones</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">〰️</div>
+            <div class="guide-text">
+              <p class="guide-label">Modulation (Motion-Based)</p>
+              <p class="guide-desc">Low motion = Steady tone, High motion = Warbling/vibrating effect</p>
+            </div>
+          </div>
+        </div>
+        <p class="guide-desc" style="margin-top: 12px; font-style: italic;">💡 Tip: Similar emotions create harmonious sounds, while contrasting emotions create dissonance.</p>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">💭 Communication Philosophy</h4>
+        <p class="guide-desc" style="margin-bottom: 12px;">Nirbhaas explores communication beyond words:</p>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">🎨</div>
+            <div class="guide-text">
+              <p class="guide-label">Visual Language</p>
+              <p class="guide-desc">Colors and patterns express what words cannot capture</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">🎵</div>
+            <div class="guide-text">
+              <p class="guide-label">Sonic Emotions</p>
+              <p class="guide-desc">Hear the emotional tone through synthesized sounds</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">✨</div>
+            <div class="guide-text">
+              <p class="guide-label">Emotional Resonance</p>
+              <p class="guide-desc">When emotions align, understanding transcends language</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">🤝</div>
+            <div class="guide-text">
+              <p class="guide-label">Silent Understanding</p>
+              <p class="guide-desc">True connection happens in the space between words</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">🤖 AI-Learned Custom Emotions <span class="ai-badge">✨ AI POWERED</span></h4>
+        <p class="guide-desc" style="margin-bottom: 12px;">The AI has learned these emotions from your usage patterns:</p>
+        <div class="learned-emotions-section" id="learnedEmotionsDisplay">
+          <p style="font-size: 13px; color: #868e96; margin: 0; text-align: center;">No custom emotions learned yet. Create your first!</p>
+        </div>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">📖 How to Use Nirbhaas</h4>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">1️⃣</div>
+            <div class="guide-text">
+              <p class="guide-label">Feel Your Emotion</p>
+              <p class="guide-desc">Don't think in words - tune into your current emotional state</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">2️⃣</div>
+            <div class="guide-text">
+              <p class="guide-label">Choose Intuitive Elements</p>
+              <p class="guide-desc">Pick colors, shapes, and rhythms that resonate with you</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">3️⃣</div>
+            <div class="guide-text">
+              <p class="guide-label">Send &amp; Listen</p>
+              <p class="guide-desc">Watch and hear your emotion come to life in motion and sound</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #667eea; color: white;">4️⃣</div>
+            <div class="guide-text">
+              <p class="guide-label">Connect Without Words</p>
+              <p class="guide-desc">Experience the sync when emotions align between you and others</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="guide-section">
+        <h4 class="guide-subtitle">📳 Haptic Feedback (Future Feature)</h4>
+        <p class="guide-desc" style="margin-bottom: 12px;">In the full app, you'll feel emotions through phone vibrations:</p>
+        <div class="guide-list">
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">💓</div>
+            <div class="guide-text">
+              <p class="guide-label">Heartbeat Pattern</p>
+              <p class="guide-desc">Gentle rhythmic pulses for love/care</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">⚡</div>
+            <div class="guide-text">
+              <p class="guide-label">Sharp Bursts</p>
+              <p class="guide-desc">Quick vibrations for excitement/urgency</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <div class="guide-icon" style="background: #f8f9fa;">🌊</div>
+            <div class="guide-text">
+              <p class="guide-label">Wave Pattern</p>
+              <p class="guide-desc">Rolling vibrations for calm/flow</p>
+            </div>
+          </div>
+        </div>
+        <div class="haptic-demo">
+          <button class="haptic-btn" id="hapticHeart">Try Heartbeat</button>
+          <button class="haptic-btn" id="hapticBurst">Try Burst</button>
+          <button class="haptic-btn" id="hapticWave">Try Wave</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9baa055920bfce4a',t:'MTc2Nzg1Nzc1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
