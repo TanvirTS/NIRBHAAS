@@ -4,6 +4,9 @@
 
 Live Demo: https://tanvirts.github.io/NIRBHAAS/
 
+It is a project made for a hackathon competetion which was UIU Hackday-2026. My teammates are: Md Alif Al Shifat & Arbin Ahsan Chowdhury
+
+
 ---
 
 ## 🧠 What Is NIRBHAAS?
